@@ -4,6 +4,8 @@ import { table } from "console-table-without-index";
 const api = "https://fakestoreapi.com/";
 const url = `${api}${args[1]}`;
 
+const comandos_validos = ["GET", "POST", "DELETE"];
+
 async function GetIdProductos() {
 
     try {
@@ -54,64 +56,76 @@ function DeleteProducto(params) {
 
 }
 
-switch (args[0]) {
-    case "GET":
-        if (`${args[1]}`.includes("products/") && /\d/.test(`${args[1]}`.charAt(9)) && /\d/.test(`${args[1]}`.charAt(10))) {
-            GetIdProductos();
-            break;
-        }
-        else if ((`${args[1]}` === "products") && (`${args[2]}` === 'undefined')) {
-            GetProductos();
-            break;
-        } else {
-            const err = new Error('URL Incorrecta para la busqueda de productos');
-            console.error(err.message);
-            process.exit(1);
-        }
+function main() {
 
-    case "POST":
+    if (!comandos_validos.includes(args[0])) {
 
-        if ((`${args[1]}` != 'products') || (`${args[2]}` === 'undefined') || (`${args[3]}` === 'undefined')
-            || (`${args[4]}` === 'undefined')) {
-            const err = new Error('Datos incorrectos o debe ingresar todos los datos para la alta del producto en la URL');
-            console.error(err.message);
-            process.exit(1);
-        } else if (isNaN(`${args[3]}`) == true) {
-            const err = new Error('Precio debe ser numerico');
-            console.error(err.message);
-            process.exit(1);
+        console.log("Comando incorrecto!!..Ingrese GET ó POST ó DELETE");
 
-        } else {
-            CrearProducto();
-        }
+    }
 
-    case "DELETE":
+    switch (args[0]) {
+        case "GET":
+            if (`${args[1]}`.includes("products/") && /\d/.test(`${args[1]}`.charAt(9)) && /\d/.test(`${args[1]}`.charAt(10))) {
+                GetIdProductos();
+                break;
+            }
+            else if ((`${args[1]}` === "products") && (`${args[2]}` === 'undefined')) {
+                GetProductos();
+                break;
+            } else {
+                const err = new Error('URL Incorrecta para la busqueda de productos');
+                console.error(err.message);
+                process.exit(1);
+            }
 
-        if (`${args[1]}`.includes("products/")) {
-            if (!(/\d/.test(`${args[1]}`.charAt(9))) && (`${args[1]}`.charAt(9)) != '') {
+        case "POST":
 
-                const err = new Error('URL Incorrecta para la eliminacion de Producto, ingrese de la forma products/id donde id es numerico ');
+            if ((`${args[1]}` != 'products') || (`${args[2]}` === 'undefined') || (`${args[3]}` === 'undefined')
+                || (`${args[4]}` === 'undefined')) {
+                const err = new Error('Datos incorrectos o debe ingresar todos los datos para la alta del producto en la URL');
+                console.error(err.message);
+                process.exit(1);
+            } else if (isNaN(`${args[3]}`) == true) {
+                const err = new Error('Precio debe ser numerico');
                 console.error(err.message);
                 process.exit(1);
 
+            } else {
+                CrearProducto();
             }
 
-            if (!(/\d/.test(`${args[1]}`.charAt(10))) && (`${args[1]}`.charAt(10)) != '') {
+        case "DELETE":
 
+            if (`${args[1]}`.includes("products/")) {
+                if (!(/\d/.test(`${args[1]}`.charAt(9))) && (`${args[1]}`.charAt(9)) != '') {
+
+                    const err = new Error('URL Incorrecta para la eliminacion de Producto, ingrese de la forma products/id donde id es numerico ');
+                    console.error(err.message);
+                    process.exit(1);
+
+                }
+
+                if (!(/\d/.test(`${args[1]}`.charAt(10))) && (`${args[1]}`.charAt(10)) != '') {
+
+                    const err = new Error('URL Incorrecta para la eliminacion de Producto, ingrese de la forma products/id donde id es numerico');
+                    console.error(err.message);
+                    process.exit(1);
+
+                }
+
+            } else {
                 const err = new Error('URL Incorrecta para la eliminacion de Producto, ingrese de la forma products/id donde id es numerico');
                 console.error(err.message);
                 process.exit(1);
-
             }
 
-        } else {
-            const err = new Error('URL Incorrecta para la eliminacion de Producto, ingrese de la forma products/id donde id es numerico');
-            console.error(err.message);
-            process.exit(1);
-        }
+            DeleteProducto();
 
-        DeleteProducto();
+        default:
+            break;
+    }
 
-    default:
-        break;
 }
+
+main();
