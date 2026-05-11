@@ -45,16 +45,51 @@ async function GetProductos() {
     }
 }
 
-function CrearProducto(params) {
+async function CrearProducto(params) {
     console.log("Se envio los datos de producto", `${args[2]}`, `${args[3]}`, `${args[4]}`, "para su creación en la BD")
+    const [, , nombre, precio, categoria] = args;
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+            {
+                nombre,
+                precio,
+                categoria
+            }
+        )
+    })
+    //console.log(response)
+    if (!response.ok) {
+        throw new Error("Error en la solicitud")
+    }
+    const data = await response.json()
+    console.log("id Creado:")
+    console.table(data);
 
 }
 
-function DeleteProducto(params) {
+async function DeleteProducto(params) {
 
-    console.log("Se envio el codigo de producto", `${args[1]}`.substring(9), "para su borrado")
+    console.log("Se envio el codigo de producto", `${args[1]}`.substring(9), "para su borrado");
+    try {
 
+        const reponse = await fetch(url, {
+            method: "DELETE"
+        })
+        if (!reponse.ok) {
+            throw new Error("Error en la solicitud")
+
+        }
+        const data = await reponse.json()
+        console.log(data)
+
+    } catch (error) {
+        console.log("No se encontro el id", `${args[1]}`.substring(9), "a Borrar");
+
+    }
 }
+
 
 function main() {
 
@@ -93,6 +128,7 @@ function main() {
 
             } else {
                 CrearProducto();
+                break;
             }
 
         case "DELETE":
@@ -121,6 +157,7 @@ function main() {
             }
 
             DeleteProducto();
+            break;
 
         default:
             break;
